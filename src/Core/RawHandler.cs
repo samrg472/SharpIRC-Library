@@ -52,9 +52,10 @@ namespace SharpIRC {
                             bot.disconnect();
                             break;
                         case "470": // Handle forwarding
-                            if (bot.channels.Contains(data[2]))
-                                bot.channels.Remove(data[2]);
-                            bot.channels.Add(data[2]);
+                            if (bot.channels.Contains(data[3]))
+                                bot.channels.Remove(data[3]);
+                            bot.channels.Add(data[4]);
+                            bot.eventBus.post<ChannelForwardEvent>(new ChannelForwardEvent(data[3], data[4]));
                             break;
                         case "376": // RPL_ENDOFMOTD
                             if (!postMOTD) {
