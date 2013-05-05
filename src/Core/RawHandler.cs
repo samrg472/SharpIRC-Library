@@ -51,6 +51,11 @@ namespace SharpIRC {
                             Console.WriteLine("Nickname in use, disconnecting...");
                             bot.disconnect();
                             break;
+                        case "470": // Handle forwarding
+                            if (bot.channels.Contains(data[2]))
+                                bot.channels.Remove(data[2]);
+                            bot.channels.Add(data[2]);
+                            break;
                         case "376": // RPL_ENDOFMOTD
                             if (!postMOTD) {
                                 postMOTD = true;

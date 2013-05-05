@@ -8,10 +8,10 @@ namespace SharpIRC {
 
     public class IRCBot {
 
-        internal readonly Connection connection;
-
         private readonly RawHandler rawHandler;
-        private ArrayList channels = new ArrayList();
+
+        internal readonly Connection connection;
+        internal ArrayList channels = new ArrayList();
 
         public readonly IRCConfig config;
         public readonly EventBus eventBus = new EventBus();
