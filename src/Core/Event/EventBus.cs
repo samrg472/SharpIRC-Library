@@ -7,11 +7,16 @@ namespace SharpIRC.Core.Event {
 
     public class EventBus {
 
-        private ArrayList list = new ArrayList();
+        private ArrayList registry = new ArrayList();
 
         public void register<T>(Action<T> method) {
-            if (!list.Contains(method))
-                list.Add(method);
+            if (!registry.Contains(method))
+                registry.Add(method);
+        }
+
+        public void unregister<T>(Action<T> method) {
+            if (registry.Contains(method))
+                registry.Remove(method);
         }
 
         public void post<T>(Event e) {
@@ -20,8 +25,8 @@ namespace SharpIRC.Core.Event {
 
         public void post<T>(Event e, bool block) {
             ThreadStart start = () => {
-                for (int i = 0; i < list.Count; i++) {
-                    Action<T> m = list[i] as Action<T>;
+                for (int i = 0; i < registry.Count; i++) {
+                    Action<T> m = registry[i] as Action<T>;
                     if (m != null)
                         m.DynamicInvoke(e);
                 }
@@ -30,7 +35,7 @@ namespace SharpIRC.Core.Event {
             t.IsBackground = true;
             t.Start();
             if (block)
-                t.Join(100 * list.Count);
+                t.Join(100 * registry.Count);
         }
     }
 
