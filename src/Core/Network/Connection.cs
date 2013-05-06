@@ -52,9 +52,9 @@ namespace SharpIRC.Core.Network {
 
         public void close() {
             try {
-                if (sw != null && sw.BaseStream != null)
+                if (sw != null)
                     sw.Close();
-                if (sr != null && sr.BaseStream != null)
+                if (sr != null)
                     sr.Close();
                 if (ns != null)
                     ns.Close();
