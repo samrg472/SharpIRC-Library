@@ -72,7 +72,6 @@ namespace SharpIRC {
                 return;
             cached.Add(channel, new Wrapper(new Channel(this, channel)));
             sendRaw("JOIN " + channel);
-            //eventBus.post<JoinChannelEvent>(new JoinChannelEvent(cached[channel].channel, new User(this, config.nick), true));
         }
 
         /// <summary>
