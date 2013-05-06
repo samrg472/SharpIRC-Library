@@ -6,9 +6,13 @@ namespace SharpIRC.Core.Event {
     public class JoinChannelEvent : Event {
 
         public readonly Channel channel;
+        public readonly User user;
+        public readonly bool isItself;
 
-        public JoinChannelEvent(Channel channel) {
+        public JoinChannelEvent(Channel channel, User user, bool isItself) {
             this.channel = channel;
+            this.user = user;
+            this.isItself = isItself;
         }
     }
 

@@ -75,6 +75,7 @@ namespace SharpIRC {
                             string user = data[0].Substring(1, data[0].IndexOf('!') - 1);
                             string chan = data[2];
                             handleUser(chan, user);
+                            bot.eventBus.post<JoinChannelEvent>(new JoinChannelEvent(bot.cached[chan].channel, new User(bot, user), user == bot.config.nick));
                             break;
                         case "PART":
                             user = data[0].Substring(1, data[0].IndexOf('!') - 1);

@@ -13,7 +13,7 @@ namespace SharpIRC {
         private readonly RawHandler rawHandler;
 
         internal readonly Connection connection;
-        internal Dictionary<string, Wrapper> cached = new Dictionary<string, Wrapper>(); // (user,chan), Wrapper
+        internal Dictionary<string, Wrapper> cached = new Dictionary<string, Wrapper>(); // TODO: Cache the user
 
         public readonly IRCConfig config;
         public readonly EventBus eventBus = new EventBus();
@@ -72,7 +72,7 @@ namespace SharpIRC {
                 return;
             cached.Add(channel, new Wrapper(new Channel(this, channel)));
             sendRaw("JOIN " + channel);
-            eventBus.post<JoinChannelEvent>(new JoinChannelEvent(cached[channel].channel));
+            //eventBus.post<JoinChannelEvent>(new JoinChannelEvent(cached[channel].channel, new User(this, config.nick), true));
         }
 
         /// <summary>
