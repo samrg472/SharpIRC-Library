@@ -82,6 +82,16 @@ namespace SharpIRC {
                             chan = data[2];
                             bot.cached[chan].channel.manager.removeUserFromAll(user);
                             break;
+                        case "MODE": 
+                            if (data.Length == 5) {
+                                if (data[data.Length - 1].Length == 0) {
+                                    // TODO: Handle channel modes
+                                } else 
+                                    bot.sendRaw("NAMES " + data[2]); // Repopulate the channel list
+                            } else {
+                                // TODO: Handle user modes (not set in channel)
+                            }
+                            break;
                         case "PRIVMSG": // TODO: Handle CTCP
                             user = data[0].Substring(1, data[0].IndexOf('!') - 1);
                             string message = "";

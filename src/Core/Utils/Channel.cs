@@ -70,40 +70,31 @@ namespace SharpIRC.Core.Util {
             }
 
             public void addOp(string user) {
-                if (!c.ops.Contains(user))
-                    c.ops.Add(user);
-            }
-            
-            public void removeOp(string user) {
-                if (c.ops.Contains(user))
-                    c.ops.Remove(user);
+                removeUserFromAll(user);
+                c.ops.Add(user);
             }
             
             public void addVoice(string user) {
-                if (!c.voices.Contains(user))
-                    c.voices.Add(user);
-            }
-            
-            public void removeVoice(string user) {
-                if (c.voices.Contains(user))
-                    c.voices.Remove(user);
+                removeUserFromAll(user);
+                c.voices.Add(user);
             }
             
             public void addUser(string user) {
-                if (!c.users.Contains(user))
-                    c.users.Add(user);
+                removeUserFromAll(user);
+                c.users.Add(user);
             }
-            
-            public void removeUser(string user) {
+
+            public void removeUserFromAll(string user) {
+                if (c.ops.Contains(user))
+                    c.ops.Remove(user);
+
+                if (c.voices.Contains(user))
+                    c.voices.Remove(user);
+
                 if (c.users.Contains(user))
                     c.users.Remove(user);
             }
 
-            public void removeUserFromAll(string user) {
-                removeOp(user);
-                removeVoice(user);
-                removeUser(user);
-            }
         }
     }
 
