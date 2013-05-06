@@ -1,8 +1,10 @@
 using System;
 using System.Threading;
 using System.Collections;
+using System.Collections.Generic;
 using SharpIRC.Core.Network;
 using SharpIRC.Core.Event;
+using SharpIRC.Core.Util;
 
 namespace SharpIRC {
 
@@ -11,7 +13,7 @@ namespace SharpIRC {
         private readonly RawHandler rawHandler;
 
         internal readonly Connection connection;
-        internal ArrayList channels = new ArrayList();
+        internal Dictionary<string, Wrapper> cached = new Dictionary<string, Wrapper>(); // (user,chan), Wrapper
 
         public readonly IRCConfig config;
         public readonly EventBus eventBus = new EventBus();
@@ -66,10 +68,11 @@ namespace SharpIRC {
         /// Channel name
         /// </param>
         public void joinChannel(string channel) {
+            if (cached.ContainsKey(channel))
+                return;
+            cached.Add(channel, new Wrapper(new Channel(this, channel)));
             sendRaw("JOIN " + channel);
-            if (!channels.Contains(channel))
-                channels.Add(channel);
-            eventBus.post<JoinChannelEvent>(new JoinChannelEvent(channel));
+            eventBus.post<JoinChannelEvent>(new JoinChannelEvent(cached[channel].channel));
         }
 
         /// <summary>
@@ -92,13 +95,18 @@ namespace SharpIRC {
         /// Reason message
         /// </param>
         public void partChannel(string channel, string reason) {
-            if (channels.Contains(channel))
-                channels.Remove(channel);
+            if (!cached.ContainsKey(channel))
+                return;
+            cached.Remove(channel);
             if (reason == null) {
                 sendRaw("PART " + channel);
                 return;
             }
             sendRaw("PART " + channel + " :" + reason);
+        }
+
+        public void sendNotice(string target, string message) {
+            sendRaw("NOTICE " + target + " :" + message);
         }
 
         public void sendMessage(string target, string message) {
@@ -131,7 +139,12 @@ namespace SharpIRC {
         /// Quit message
         /// </param>
         public void disconnect(string message) {
-            eventBus.post<DisconnectEvent>(new DisconnectEvent(config.server, (string[])channels.ToArray(typeof(string))), true);
+            ArrayList channels = new ArrayList();
+            foreach (Wrapper s in cached.Values) {
+                if (s.isChannelWrapper)
+                    channels.Add(s.channel);
+            }
+            eventBus.post<DisconnectEvent>(new DisconnectEvent(config.server, (Channel[])channels.ToArray(typeof(Channel))), true);
             if (!connected)
                 return;
             sendRaw("QUIT" + (message != null ? (" :" + message) : ""));

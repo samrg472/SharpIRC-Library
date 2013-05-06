@@ -2,6 +2,7 @@ using System;
 using System.Threading;
 using System.IO;
 using SharpIRC.Core.Event;
+using SharpIRC.Core.Util;
 
 namespace SharpIRC {
     public class RawHandler {
@@ -52,10 +53,10 @@ namespace SharpIRC {
                             bot.disconnect();
                             break;
                         case "470": // Handle forwarding
-                            if (bot.channels.Contains(data[3]))
-                                bot.channels.Remove(data[3]);
-                            bot.channels.Add(data[4]);
-                            bot.eventBus.post<ChannelForwardEvent>(new ChannelForwardEvent(data[3], data[4]));
+                            if (bot.cached.ContainsKey(data[3]))
+                                bot.cached.Remove(data[3]);
+                            bot.cached.Add(data[4], new Wrapper(new Channel(bot, data[4])));
+                            bot.eventBus.post<ChannelForwardEvent>(new ChannelForwardEvent(data[3], bot.cached[data[4]].channel));
                             break;
                         case "376": // RPL_ENDOFMOTD
                             if (!postMOTD) {
@@ -66,21 +67,50 @@ namespace SharpIRC {
                                     bot.joinChannel(channel);
                             }
                             break;
-                        case "PRIVMSG":
+                        case "353": // NAMES
+                            for (int i = 5; i < data.Length; i++)
+                                handleUser(data[4], data[i]);
+                            break;
+                        case "JOIN":
                             string user = data[0].Substring(1, data[0].IndexOf('!') - 1);
+                            string chan = data[2];
+                            handleUser(chan, user);
+                            break;
+                        case "PART":
+                            user = data[0].Substring(1, data[0].IndexOf('!') - 1);
+                            chan = data[2];
+                            bot.cached[chan].channel.manager.removeUserFromAll(user);
+                            break;
+                        case "PRIVMSG": // TODO: Handle CTCP
+                            user = data[0].Substring(1, data[0].IndexOf('!') - 1);
                             string message = "";
                             for (int i = 3; i < data.Length; i++)
                                 message += (message.Length == 0 ? "" : " ") + data[i];
                             if (data[2].StartsWith("#"))
-                                bot.eventBus.post<MessageEvent>(new MessageEvent(message.Substring(1), data[2], user));
+                                bot.eventBus.post<MessageEvent>(new MessageEvent(message.Substring(1), bot.cached[data[2]].channel, new User(bot, user)));
                             else {
-                                bot.eventBus.post<PrivateMessageEvent>(new PrivateMessageEvent(message.Substring(1), user));
+                                bot.eventBus.post<PrivateMessageEvent>(new PrivateMessageEvent(message.Substring(1), new User(bot, user)));
                             }
                             break;
                     }
 
                 }
             } catch (IOException) {} // catches a ThreadAbortException wrapped in an IOException
+        }
+
+        private void handleUser(string chan, string user) {
+            user = user.StartsWith(":") ? user.Substring(1) : user;
+            switch (user.Substring(0, 1)) {
+                case "@": // op
+                    bot.cached[chan].channel.manager.addOp(user.Substring(1));
+                    break;
+                case "+": // voice
+                    bot.cached[chan].channel.manager.addVoice(user.Substring(1));
+                    break;
+                default: // normal
+                    bot.cached[chan].channel.manager.addUser(user);
+                    break;
+            }
         }
 
     }

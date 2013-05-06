@@ -1,12 +1,13 @@
 using System;
+using SharpIRC.Core.Util;
 
 namespace SharpIRC.Core.Event {
 
     public class JoinChannelEvent : Event {
 
-        public readonly string channel;
+        public readonly Channel channel;
 
-        public JoinChannelEvent(string channel) {
+        public JoinChannelEvent(Channel channel) {
             this.channel = channel;
         }
     }
@@ -14,9 +15,9 @@ namespace SharpIRC.Core.Event {
     public class ChannelForwardEvent : Event {
 
         public readonly string previousChannel;
-        public readonly string channel;
+        public readonly Channel channel;
 
-        public ChannelForwardEvent(string previousChannel, string channel) {
+        public ChannelForwardEvent(string previousChannel, Channel channel) {
             this.previousChannel = previousChannel;
             this.channel = channel;
         }
