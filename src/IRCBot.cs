@@ -120,6 +120,8 @@ namespace SharpIRC {
                 return;
             connection.connect();
             rawHandler.run(true);
+            if (config.serverPassword != null)
+                sendRaw("PASS " + config.serverPassword);
             sendRaw("NICK " + config.nick);
             sendRaw("USER " + config.username + " 8 * :" + config.realName);
         }
