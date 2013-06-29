@@ -140,12 +140,12 @@ namespace SharpIRC {
         /// Quit message
         /// </param>
         public void disconnect(string message) {
-            ArrayList channels = new ArrayList();
+            List<Channel> channels = new List<Channel>();
             foreach (Wrapper s in cached.Values) {
                 if (s.isChannelWrapper)
                     channels.Add(s.channel);
             }
-            eventBus.post<DisconnectEvent>(new DisconnectEvent(config.server, (Channel[])channels.ToArray(typeof(Channel))), true);
+            eventBus.post<DisconnectEvent>(new DisconnectEvent(config.server, channels.ToArray()), true);
             if (!connected)
                 return;
             sendRaw("QUIT" + (message != null ? (" :" + message) : ""));
