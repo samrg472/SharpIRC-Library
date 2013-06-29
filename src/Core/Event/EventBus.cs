@@ -19,11 +19,11 @@ namespace SharpIRC.Core.Event {
                 registry.Remove(method);
         }
 
-        public void post<T>(Event e) where T : Event {
+        public void post<T>(T e) where T : Event {
             post<T>(e, false);
         }
 
-        public void post<T>(Event e, bool block) where T : Event {
+        public void post<T>(T e, bool block) where T : Event {
             ThreadStart start = () => {
                 for (int i = 0; i < registry.Count; i++) {
                     Action<T> m = registry[i] as Action<T>;
