@@ -112,6 +112,22 @@ namespace SharpIRC {
             sendRaw("PRIVMSG " + target + " :" + message);
         }
 
+        public void op(string channel, string user) {
+            sendRaw("MODE " + channel + " +o " + user);
+        }
+
+        public void deop(string channel, string user) {
+            sendRaw("MODE " + channel + " -o " + user);
+        }
+
+        public void voice(string channel, string user) {
+            sendRaw("MODE " + channel + " +v " + user);
+        }
+
+        public void devoice(string channel, string user) {
+            sendRaw("MODE " + channel + " -v " + user);
+        }
+
         /// <summary>
         /// Connects to the IRC server if not already
         /// </summary>
