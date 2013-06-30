@@ -1,5 +1,5 @@
 using System;
-using System.Collections;
+using System.Collections.Generic;
 
 namespace SharpIRC.Core.Util {
 
@@ -8,9 +8,9 @@ namespace SharpIRC.Core.Util {
         public readonly IRCBot bot;
         public readonly string channel;
 
-        private readonly ArrayList ops = new ArrayList();
-        private readonly ArrayList voices = new ArrayList();
-        private readonly ArrayList users = new ArrayList(); // All users in channel
+        private readonly List<string> ops = new List<string>();
+        private readonly List<string> voices = new List<string>();
+        private readonly List<string> users = new List<string>(); // All regular users in channel
 
         public UserManagement manager;
 
@@ -37,23 +37,23 @@ namespace SharpIRC.Core.Util {
         }
 
         public string[] getOps() {
-            return (string[]) ops.ToArray(typeof(string));
+            return ops.ToArray();
         }
 
         public string[] getVoices() {
-            return (string[]) voices.ToArray(typeof(string));
+            return voices.ToArray();
         }
 
         public string[] getUsers() {
-            return (string[]) users.ToArray(typeof(string));
+            return users.ToArray();
         }
 
         public string[] getAllUsers() {
-            ArrayList newArray = new ArrayList();
+            List<string> newArray = new List<string>();
             newArray.AddRange(ops);
             newArray.AddRange(voices);
             newArray.AddRange(users);
-            return (string[]) newArray.ToArray(typeof(string));
+            return newArray.ToArray();
         }
 
         public override string ToString() {
